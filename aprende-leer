@@ -1,0 +1,330 @@
+# Create the HTML file with the provided content
+html_content = """<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="author" content="Jose David Mendoza Terrazas" />
+  <title>Aprender a leer · México · OpenMoji</title>
+  <style>
+    :root{
+      --bg:#f7f9fb;
+      --card:#ffffff;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --ok:#16a34a;
+      --bad:#dc2626;
+      --pri:#075985;
+      --pri-2:#0ea5e9;
+      --chip:#eef2ff;
+      --chip-border:#c7d2fe;
+      --focus:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Color Emoji","Segoe UI Emoji", sans-serif;
+    }
+    header{
+      padding:10px 16px; background:var(--card); position:sticky; top:0; z-index:10;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+      display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+    .brand{font-weight:700; color:var(--pri); display:flex; gap:8px; align-items:center}
+    .brand .emoji{font-size:24px}
+    .levels{display:flex; gap:8px; flex-wrap:wrap}
+    button{
+      border:1px solid rgba(0,0,0,.08); background:#fff; color:var(--ink);
+      padding:10px 12px; border-radius:10px; cursor:pointer; font-weight:600;
+      transition:transform .05s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--pri); color:#fff; border-color:transparent}
+    .btn-outline{background:#fff}
+    .btn-ghost{background:transparent; border-color:transparent; color:var(--pri)}
+    .btn-success{background:var(--ok); color:#fff; border-color:transparent}
+    .btn-danger{background:var(--bad); color:#fff; border-color:transparent}
+    .toolbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+    .score{
+      font-weight:700; color:var(--pri-2);
+    }
+    main{max-width:1000px; margin:16px auto; padding:0 16px 40px}
+    .card{
+      background:var(--card); border-radius:14px; padding:16px;
+      box-shadow:0 6px 24px rgba(0,0,0,.06);
+    }
+    .grid{
+      display:grid; gap:16px;
+      grid-template-columns: 1fr;
+    }
+    @media(min-width:800px){
+      .grid{grid-template-columns: 360px 1fr;}
+    }
+    .media{
+      display:flex; align-items:center; justify-content:center; min-height:220px;
+      background:linear-gradient(135deg,#eff6ff,#fdf2f8);
+      border-radius:12px; position:relative; overflow:hidden;
+    }
+    .media img{width:180px; height:180px; object-fit:contain}
+    .emoji-fallback{font-size:120px}
+    .prompt{font-size:18px; font-weight:700}
+    .chips{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:6px 0 8px;
+    }
+    .chip{
+      background:var(--chip); border:1px solid var(--chip-border);
+      padding:6px 10px; border-radius:999px; font-weight:700; cursor:pointer;
+      user-select:none;
+    }
+    .chip:active{transform:scale(.98)}
+    label{font-weight:700}
+    input[type="text"]{
+      width:100%; padding:12px 14px; font-size:20px; border-radius:12px;
+      border:2px solid #e5e7eb; outline:none;
+    }
+    input[type="text"]:focus{
+      border-color:var(--focus); box-shadow:0 0 0 4px rgba(245,158,11,.15);
+    }
+    .controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px}
+    .status{
+      min-height:28px; display:flex; align-items:center; gap:6px; font-weight:700;
+    }
+    .ok{color:var(--ok)} .bad{color:var(--bad)}
+    .muted{color:var(--muted)}
+    .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+    .foot{
+      margin-top:14px; color:var(--muted); font-size:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center
+    }
+    .kbd{
+      font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:12px; border:1px solid #ddd; background:#f8fafc; padding:2px 6px; border-radius:6px;
+    }
+    .summary{
+      position:fixed; inset:0; background:rgba(0,0,0,.5);
+      display:none; align-items:center; justify-content:center; padding:16px;
+    }
+    .summary .box{
+      background:#fff; padding:18px; border-radius:14px; max-width:560px; width:100%;
+      box-shadow:0 10px 30px rgba(0,0,0,.2);
+    }
+    .summary h2{margin:0 0 8px}
+    .list-bad{margin:8px 0 0; padding-left:18px}
+    .tiny{font-size:12px; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="emoji" aria-hidden="true">🪅</span>
+      <span>Aprender a leer · México</span>
+    </div>
+    <div class="toolbar">
+      <div class="levels" role="tablist" aria-label="Seleccionar nivel">
+        <button class="btn-primary" data-level="1" aria-selected="true">Nivel 1: Sílabas</button>
+        <button class="btn-outline" data-level="2">Nivel 2: Palabra</button>
+        <button class="btn-outline" data-level="3">Nivel 3: Dictado</button>
+      </div>
+      <div class="score" aria-live="polite">
+        Aciertos: <span id="hits">0</span> · Restantes: <span id="left">0</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="grid">
+        <div class="media" id="media" aria-label="Imagen de la palabra">
+          <!-- Imagen de OpenMoji con fallback a emoji -->
+        </div>
+        <div>
+          <div class="prompt" id="prompt">Escribe la sílaba que falta.</div>
+
+          <div class="chips" id="syllableHints" aria-label="Pistas de sílabas (haz clic para escuchar)"></div>
+
+          <div class="row">
+            <label for="answer" id="answerLabel">Tu respuesta</label>
+            <span class="tiny">(usa <span class="kbd">Enter</span> para comprobar)</span>
+          </div>
+          <input type="text" id="answer" inputmode="latin" autocomplete="off" autocapitalize="none" spellcheck="false" />
+
+          <div class="controls">
+            <button id="btnSpeak" class="btn-outline" title="Escuchar palabra">🔊 Palabra</button>
+            <button id="btnCheck" class="btn-primary">Comprobar</button>
+            <button id="btnSkip" class="btn-ghost">Saltar</button>
+            <button id="btnToggleHints" class="btn-ghost" style="display:none;">Ocultar pistas</button>
+          </div>
+
+          <div class="status muted" id="status" aria-live="polite"></div>
+
+          <div class="foot">
+            <span>Autor: <strong>Jose David Mendoza Terrazas</strong></span>
+            <span>·</span>
+            <span>Imágenes: <a href="https://openmoji.org" target="_blank" rel="noopener">OpenMoji</a> (CC BY-SA 4.0)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section class="summary" id="summary" role="dialog" aria-modal="true" aria-labelledby="sumTitle">
+    <div class="box">
+      <h2 id="sumTitle">Resumen</h2>
+      <p><strong>Aciertos:</strong> <span id="sumHits">0</span> de <span id="sumTotal">0</span> (<span id="sumPct">0</span>%)</p>
+      <p class="tiny">Tiempo: <span id="sumTime">0s</span></p>
+      <div id="sumBadWrap" style="display:none;">
+        <p>Palabras por reforzar:</p>
+        <ol class="list-bad" id="sumBad"></ol>
+      </div>
+      <div class="controls">
+        <button id="btnRetryWrong" class="btn-success">Reintentar solo falladas</button>
+        <button id="btnRetryAll" class="btn-outline">Reiniciar nivel</button>
+        <button id="btnCloseSummary" class="btn-primary">Cerrar</button>
+      </div>
+      <p class="tiny">Consejo: puedes repetir el audio y mostrar/ocultar las pistas de sílabas en el Nivel 3.</p>
+    </div>
+  </section>
+
+  <script>
+    const normalize = (s) =>
+      (s||"")
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\\p{Diacritic}/gu,'')
+        .replace(/[^a-zñáéíóúü0-9\\s]/gi,'')
+        .trim();
+
+    const shuffle = (arr) => {
+      const a = arr.slice();
+      for (let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+      }
+      return a;
+    };
+
+    const WB = [
+      { word:"taco", syll:["ta","co"], emoji:"🌮", code:"1F32E", accepted:[] },
+      { word:"tamal", syll:["ta","mal"], emoji:"🫔", code:"1FAD4", accepted:[] },
+      { word:"nopal", syll:["no","pal"], emoji:"🌵", code:"1F335", accepted:[] },
+      { word:"chile", syll:["chi","le"], emoji:"🌶️", code:"1F336", accepted:[] },
+      { word:"maíz", syll:["ma","íz"], emoji:"🌽", code:"1F33D", accepted:["maiz"] },
+      { word:"piñata", syll:["pi","ña","ta"], emoji:"🪅", code:"1FA85", accepted:["pinata"] },
+      { word:"jitomate", syll:["ji","to","ma","te"], emoji:"🍅", code:"1F345", accepted:["tomate"] },
+      { word:"camión", syll:["ca","mión"], emoji:"🚌", code:"1F68C", accepted:["camion","bus"] },
+      { word:"metro", syll:["me","tro"], emoji:"🚇", code:"1F687", accepted:[] },
+      { word:"escuela", syll:["es","cue","la"], emoji:"🏫", code:"1F3EB", accepted:[] },
+      { word:"agua", syll:["a","gua"], emoji:"💧", code:"1F4A7", accepted:[] },
+      { word:"cacao", syll:["ca","ca","o"], emoji:"🍫", code:"1F36B", accepted:[] },
+      { word:"teléfono", syll:["te","lé","fo","no"], emoji:"📱", code:"1F4F1", accepted:["telefono","celular"] },
+      { word:"fútbol", syll:["fút","bol"], emoji:"⚽", code:"26BD", accepted:["futbol","balon"] },
+      { word:"libro", syll:["li","bro"], emoji:"📖", code:"1F4D6", accepted:[] },
+      { word:"estrella", syll:["es","tre","lla"], emoji:"⭐", code:"2B50", accepted:[] },
+      { word:"sol", syll:["sol"], emoji:"☀️", code:"2600", accepted:[] },
+      { word:"aguacate", syll:["a","gua","ca","te"], emoji:"🥑", code:"1F951", accepted:[] },
+      { word:"lápiz", syll:["lá","piz"], emoji:"✏️", code:"270F", accepted:["lapiz"] },
+      { word:"playa", syll:["pla","ya"], emoji:"🏖️", code:"1F3D6", accepted:[] }
+    ];
+
+    let level = 1;
+    let queue = [];
+    let idx = 0;
+    let hits = 0;
+    let wrong = [];
+    let startedAt = null;
+    let showHintsL3 = true;
+
+    const $media = document.getElementById('media');
+    const $prompt = document.getElementById('prompt');
+    const $syllHints = document.getElementById('syllableHints');
+    const $answer = document.getElementById('answer');
+    const $btnSpeak = document.getElementById('btnSpeak');
+    const $btnCheck = document.getElementById('btnCheck');
+    const $btnSkip = document.getElementById('btnSkip');
+    const $btnToggleHints = document.getElementById('btnToggleHints');
+    const $status = document.getElementById('status');
+    const $hits = document.getElementById('hits');
+    const $left = document.getElementById('left');
+
+    const $summary = document.getElementById('summary');
+    const $sumHits = document.getElementById('sumHits');
+    const $sumTotal = document.getElementById('sumTotal');
+    const $sumPct = document.getElementById('sumPct');
+    const $sumTime = document.getElementById('sumTime');
+    const $sumBadWrap = document.getElementById('sumBadWrap');
+    const $sumBad = document.getElementById('sumBad');
+    const $btnRetryWrong = document.getElementById('btnRetryWrong');
+    const $btnRetryAll = document.getElementById('btnRetryAll');
+    const $btnCloseSummary = document.getElementById('btnCloseSummary');
+
+    function speak(text){
+      if(!text) return;
+      const utter = new SpeechSynthesisUtterance(text);
+      const voices = window.speechSynthesis.getVoices();
+      const mx = voices.find(v => /es(-|_)MX/i.test(v.lang));
+      const es = voices.find(v => /^es/i.test(v.lang));
+      utter.voice = mx || es || null;
+      utter.rate = 0.9;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    }
+    window.speechSynthesis.onvoiceschanged = () => {};
+
+    function speakSyllables(sylls){
+      if(!Array.isArray(sylls) || !sylls.length) return speak('');
+      let i = 0;
+      const sayNext = () => {
+        if(i >= sylls.length) return;
+        const u = new SpeechSynthesisUtterance(sylls[i]);
+        const voices = window.speechSynthesis.getVoices();
+        u.voice = voices.find(v => /es(-|_)MX/i.test(v.lang)) || voices.find(v => /^es/i.test(v.lang)) || null;
+        u.rate = 0.8;
+        i++;
+        u.onend = () => setTimeout(sayNext, 120);
+        speechSynthesis.speak(u);
+      };
+      speechSynthesis.cancel();
+      sayNext();
+    }
+
+    function renderImage(item){
+      const url = `https://openmoji.org/data/color/svg/${item.code}.svg`;
+      $media.innerHTML = `
+        <img src="${url}" alt="${item.word}" onerror="this.outerHTML='<span class=&quot;emoji-fallback&quot;>${item.emoji}</span>'" />
+      `;
+    }
+
+    function renderHints(item, forLevel){
+      $syllHints.innerHTML = '';
+      const show = (forLevel===3) ? showHintsL3 : true;
+      $syllHints.style.display = show ? 'flex' : 'none';
+      if(!show) return;
+
+      const row = document.createDocumentFragment();
+      item.syll.forEach(s => {
+        const chip = document.createElement('button');
+        chip.className = 'chip';
+        chip.type = 'button';
+        chip.textContent = s;
+        chip.title = 'Escuchar sílaba';
+        chip.addEventListener('click', () => speak(s));
+        row.appendChild(chip);
+      });
+      $syllHints.appendChild(row);
+    }
+
+    function getCurrent(){ return queue[idx]; }
+
+    function setupLevel(newLevel){
+      level = newLevel;
+      hits = 0; wrong = [];
+      startedAt = Date.now();
+      if(level===1){
+        queue = shuffle(WB.filter(w => w.syll.length >= 2));
+      } else {
+        queue = shuffle(WB);
+      }
+      idx = 0;
+      $hits.textContent = hits;
+      $left.textContent = queue.length - idx;
+      document.querySelectorAll('[data-level]').forEach(btn=>{
+        btn.className = (Number(btn.dataset.level)===level) ? 'btn-primary' : 'btn
